@@ -86,6 +86,15 @@
             border: none;
         }
 
+        .fallback-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -145,6 +154,9 @@
                     allowfullscreen
                     title="Tableau Dashboard">
                 </iframe>
+            </div>
+            <div class="fallback-message" id="fallback">
+                <p>Oops! The dashboard couldn’t load due to embedding restrictions. Please visit Tableau Public directly or contact support for help! 😅</p>
             </div>
         </div>
 
@@ -223,14 +235,22 @@
                 });
             });
 
-            // Check iframe loading
+            // Check if Tableau iframe loads
             const tableauIframe = document.querySelector('.tableau-container iframe');
+            const fallbackMessage = document.getElementById('fallback');
+            
             tableauIframe.addEventListener('load', () => {
                 console.log('Tableau iframe loaded successfully');
             });
-            tableauIframe.addEventListener('error', (e) => {
-                console.error('Error loading Tableau iframe:', e);
-            });
+            
+            // Fallback if iframe fails to load
+            setTimeout(() => {
+                if (!tableauIframe.contentWindow || tableauIframe.contentWindow.document.body.innerHTML === '') {
+                    console.error('Tableau iframe failed to load');
+                    tableauIframe.style.display = 'none';
+                    fallbackMessage.style.display = 'block';
+                }
+            }, 3000); // Check after 3 seconds
         });
     </script>
 </body>
